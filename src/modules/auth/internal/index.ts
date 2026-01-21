@@ -20,8 +20,8 @@ router.post(
     const createdUsers = [];
 
     for (const user of users) {
-      const { email, password, name } = user;
-      const createdUser = await authService.register({ email, password, name });
+      const { email, password, role } = user;
+      const createdUser = await authService.registerToInvite({ email, password, role });
       createdUsers.push(createdUser);
     }
 
