@@ -1,0 +1,19 @@
+.qodo
+node_modules
+.env
+.env.test
+logs
+dist
+.vscode
+coverage
+# MongoDB data files
+data/mongodb/
+data/diagnostic.data/
+data/journal
+data
+uploads
+.trae
+# Docker
+postgres_data
+scripts
+.vercel
