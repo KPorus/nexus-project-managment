@@ -23,7 +23,6 @@ export interface AuthRequest extends Request {
 
 export interface AuthType extends Document {
   _id: Types.ObjectId;
-  name: string;
   email: string;
   password: string;
   role: Role;

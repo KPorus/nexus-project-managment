@@ -10,7 +10,6 @@ export interface AuthModelType extends Model<AuthType> {
 
 const userSchema = new Schema<AuthType, AuthModelType>(
   {
-    name: String,
     email: { type: String, unique: true, required: true },
     password: { type: String, required: true },
     role: { type: String, enum: Object.values(Role), default: Role.STAFF },

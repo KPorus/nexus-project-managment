@@ -10,8 +10,8 @@ import { Request, Response } from "express";
  */
 
 const signUp = async (req: Request, res: Response) => {
-  const { email, password, name } = req.body;
-  const user = await authService.register({ email, password, name });
+  const { email, password, role } = req.body;
+  const user = await authService.register({ email, password, role });
   sendResponse(res, user, HTTP_STATUS_CODES.CREATED, "Signup successful!");
 };
 

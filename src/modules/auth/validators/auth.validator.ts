@@ -6,7 +6,6 @@ const registerSchema = z.object({
     email: z.string().email("Invalid email format from registerSchema"),
     password: z.string().min(6, "Password must be at least 6 characters long"),
     role: z.string(),
-    name: z.string(),
   }),
 });
 
@@ -25,7 +24,6 @@ const seedRegisterSchema = z.object({
         email: z.string().email(),
         password: z.string().min(6),
         role: z.string(),
-        name: z.string(),
       }),
     ),
   }),

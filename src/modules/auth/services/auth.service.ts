@@ -4,6 +4,7 @@ import { generateToken, verifyToken } from "@/utils/token.util";
 import { HTTP_STATUS_CODES } from "@utils/http-status-codes";
 import { AppError } from "@/types/error.type";
 import { User } from "../models/auth.model";
+import { Role } from "../types/auth.types";
 import { Types } from "mongoose";
 
 /**
@@ -12,13 +13,13 @@ import { Types } from "mongoose";
 const register = async (data: TRegisterInput) => {
   const hashedPassword = await hashPassword(data.password);
   const user = await User.createUser({
-    name: data.name,
     email: data.email,
     password: hashedPassword,
+    role: data.role as Role,
   });
   // console.log(user);
   return {
-    message: `${user.name} Signup successful`,
+    message: `${user.email} Signup successful`,
     user: {
       id: user._id,
       email: user.email,
@@ -47,11 +48,11 @@ const login = async (data: TLoginInput) => {
   const token = generateToken({
     id: existing._id,
     email: existing.email,
-    role: existing.role
+    role: existing.role,
   });
 
   return {
-    message: `${existing.name} Login successful`,
+    message: `${existing.email} Login successful`,
     accessToken: token.acessToken,
     refreshToken: token.refreshToken,
     user: {
@@ -90,7 +91,7 @@ const refreshTokens = async (refreshToken: string) => {
   const tokens = generateToken({
     id: user._id,
     email: user.email,
-    role: user.role
+    role: user.role,
   });
 
   return {

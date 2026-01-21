@@ -1,6 +1,6 @@
 import { HTTP_STATUS_CODES } from "@/utils/http-status-codes";
 import { Role } from "@/modules/auth/types/auth.types";
-import { Model, Schema, Types, model } from "mongoose";
+import { Model, Schema, model } from "mongoose";
 import { InviteType } from "../types/invite.type";
 import { AppError } from "@/types/error.type";
 import crypto from "crypto";
@@ -20,11 +20,7 @@ export interface InvitationModelType extends Model<InviteType> {
   createInvitation(data: {
     email: string;
     role: Role;
-  }): Promise<InviteType | null>;
-  findAllUser(currentUserId: Types.ObjectId | string): Promise<[]>;
-  findByEmail(email: string): Promise<InviteType | null>;
-  findUser(email: string): Promise<InviteType | null>;
-  createUser(data: Partial<InviteType>): Promise<InviteType>;
+  }): Promise<InviteType>;
 }
 
 const invitationSchema = new Schema<InviteType, InvitationModelType>(
@@ -40,7 +36,7 @@ const invitationSchema = new Schema<InviteType, InvitationModelType>(
 invitationSchema.statics.createInvitation = async function (data: {
   email: string;
   role: Role;
-}): Promise<InviteType | null> {
+}): Promise<InviteType> {
   const token = generateExpiringId(60 * 60 * 1000);
   console.log(token);
   const user = await this.create({
@@ -53,7 +49,7 @@ invitationSchema.statics.createInvitation = async function (data: {
 
 invitationSchema.statics.findInvitation = async function (
   token: string,
-): Promise<InviteType | null> {
+): Promise<InviteType> {
   const invitation = await this.find({ token: token });
 
   const { expiresAt } = parseExpiringId(invitation[0].token as string);
