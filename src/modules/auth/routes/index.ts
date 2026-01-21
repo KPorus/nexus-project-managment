@@ -13,11 +13,6 @@ router.post(
   asyncHandler(authController.login),
 );
 
-router.post(
-  "/register",
-  validate(authValidator.registerSchema),
-  asyncHandler(authController.signUp),
-);
 router.post("/refreshToken", asyncHandler(authController.handleRefreshTokens));
 router.get(
   "/get-all-users",

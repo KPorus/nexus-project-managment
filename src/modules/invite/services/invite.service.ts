@@ -54,7 +54,7 @@ const acceptInvitation = async ({
     throw new AppError(HTTP_STATUS_CODES.NOT_FOUND, "Invitation not found");
   }
 
-  const user = await authService.register({
+  const user = await authService.registerToInvite({
     email: invitation.email,
     password: hashedPassword,
     role: invitation.role as Role,

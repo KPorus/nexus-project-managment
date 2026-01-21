@@ -6,16 +6,6 @@ import { AuthRequest } from "../types/auth.types";
 import { Request, Response } from "express";
 
 /**
- * Student Sign UP controller
- */
-
-const signUp = async (req: Request, res: Response) => {
-  const { email, password, role } = req.body;
-  const user = await authService.register({ email, password, role });
-  sendResponse(res, user, HTTP_STATUS_CODES.CREATED, "Signup successful!");
-};
-
-/**
  * Login controller
  */
 
@@ -59,14 +49,14 @@ const handleRefreshTokens = async (req: Request, res: Response) => {
 };
 
 const getAllUsers = async (req: AuthRequest, res: Response) => {
-  const id = req.user?.id.toString();
-  console.log(id);
-  const users = await authService.getAllUsers(id as string);
+  const { page, limit } = req.body;
+  const id = req.user?.id;
+  console.log(page, limit, id);
+  const users = await authService.getAllUsers({ page, limit, id });
   sendResponse(res, users.users, HTTP_STATUS_CODES.OK, users.messages);
 };
 
 export const authController = {
-  signUp,
   login,
   logout,
   handleRefreshTokens,

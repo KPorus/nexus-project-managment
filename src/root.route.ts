@@ -18,7 +18,7 @@ const moduleRoutes = [
     module: internalRouter,
   },
   {
-    protected: true,
+    protected: false,
     path: "/invite",
     module: inviteRouter,
   },

@@ -1,24 +1,27 @@
+import { authenticateJWT, restrictTo } from "@/middlewares/auth.middleware";
+import { projectController } from "../controllers/project.controller";
 import { asyncHandler } from "@/handlers/async.handler";
+import { Role } from "@/modules/auth/types/auth.types";
 import express from "express";
-import { inviteController } from "../controllers/project.controller";
 const router = express.Router();
 
-router.post(
-  "/create-invite",
-//   validate(authValidator.LoginSchema),
-  asyncHandler(inviteController.createInvite),
+router.post("/projects", asyncHandler(projectController.createProject));
+router.get(
+  "/projects",
+  authenticateJWT,
+  asyncHandler(projectController.listProject),
 );
 
-router.post(
-  "/find-invite",
-//   validate(authValidator.registerSchema),
-  asyncHandler(inviteController.findInvitation),
+router.patch(
+  "/projects/:id",
+  restrictTo([Role.ADMIN]),
+  asyncHandler(projectController.updateProject),
 );
-router.post(
-  "/accept-invite",
-//   validate(authValidator.registerSchema),
-  asyncHandler(inviteController.),
+router.delete(
+  "/projects/:id",
+  authenticateJWT,
+  restrictTo([Role.ADMIN]),
+  asyncHandler(projectController.deleteProject),
 );
-
 
 export const inviteRouter = router;

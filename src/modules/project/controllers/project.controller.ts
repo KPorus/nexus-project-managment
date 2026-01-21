@@ -1,36 +1,34 @@
+import { projectService } from "../services/project.service";
 import { HTTP_STATUS_CODES } from "@utils/http-status-codes";
 import { sendResponse } from "@/handlers/response.handler";
-import { inviteService } from "../services/project.service";
 import { Request, Response } from "express";
+import { Types } from "mongoose";
 
-const createInvite = async (req: Request, res: Response) => {
-  const { email, role } = req.body;
-  const invitation = await inviteService.createInvite({
-    email,
-    role,
-  });
-
-  sendResponse(
-    res,
-    invitation,
-    HTTP_STATUS_CODES.OK,
-    "Invitation created successful!",
-  );
+const createProject = async (req: Request, res: Response) => {
+  const body = req.body.data;
+  const project = await projectService.createProject(body);
+  sendResponse(res, project, HTTP_STATUS_CODES.OK, "Project Created");
 };
 
-const findInvitation = async (req: Request, res: Response) => {
-  const { token } = req.body;
-  const invitation = await inviteService.findInvitation(token);
-  sendResponse(res, invitation, HTTP_STATUS_CODES.FOUND, "Invitation Found");
+const listProject = async (req: Request, res: Response) => {
+  const project = await projectService.listProject();
+  sendResponse(res, project, HTTP_STATUS_CODES.OK, "Project found");
+};
+const updateProject = async (req: Request, res: Response) => {
+  const data = req.body.data;
+  const updateData = await projectService.updateProject(data);
+  sendResponse(res, updateData, HTTP_STATUS_CODES.OK, "Project updated");
 };
 
-const acceptInvitation = async (req: Request, res: Response) => {
-  const body = req.body;
-  const invitation = await inviteService.acceptInvitation(body);
-  sendResponse(res, invitation, HTTP_STATUS_CODES.FOUND, "Invitation Found");
+const deleteProject = async (req: Request, res: Response) => {
+  const { id } = req.body;
+  const updateData = await projectService.deleteProject(new Types.ObjectId(id));
+  sendResponse(res, updateData, HTTP_STATUS_CODES.OK, "Project delete");
 };
-export const inviteController = {
-  createInvite,
-  findInvitation,
-  acceptInvitation,
+
+export const projectController = {
+  createProject,
+  listProject,
+  updateProject,
+  deleteProject,
 };

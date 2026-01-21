@@ -4,6 +4,7 @@ import { ProjectType, Status } from "../types/project.type";
 
 export interface ProjectModelType extends Model<ProjectType> {
   createProject(data: Partial<ProjectType>): Promise<ProjectType>;
+  listProject(): Promise<ProjectType[] | null>;
   deleteProject(id: Types.ObjectId | string): Promise<ProjectType | null>;
   updateProject(
     id: Types.ObjectId | string,
@@ -32,7 +33,11 @@ projectSchema.statics.createProject = async function (
   const project = await this.create(data);
   return project;
 };
-
+projectSchema.statics.listProject = async function (): Promise<
+  ProjectType[] | null
+> {
+  return await this.find();
+};
 projectSchema.statics.updateProject = async function (
   id: Types.ObjectId | string,
   updateData: Partial<ProjectType>,

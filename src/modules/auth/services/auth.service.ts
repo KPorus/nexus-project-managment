@@ -2,22 +2,21 @@ import { TLoginInput, TRegisterInput } from "../validators/auth.validator";
 import { hashPassword, validatePassword } from "@/helpers/auth.helper";
 import { generateToken, verifyToken } from "@/utils/token.util";
 import { HTTP_STATUS_CODES } from "@utils/http-status-codes";
+import { Role, Status } from "../types/auth.types";
 import { AppError } from "@/types/error.type";
 import { User } from "../models/auth.model";
-import { Role } from "../types/auth.types";
 import { Types } from "mongoose";
 
 /**
  * Register service =====================================
  */
-const register = async (data: TRegisterInput) => {
+const registerToInvite = async (data: TRegisterInput) => {
   const hashedPassword = await hashPassword(data.password);
   const user = await User.createUser({
     email: data.email,
     password: hashedPassword,
     role: data.role as Role,
   });
-  // console.log(user);
   return {
     message: `${user.email} Signup successful`,
     user: {
@@ -35,6 +34,9 @@ const login = async (data: TLoginInput) => {
   const existing = await User.findByEmail(data.email);
   if (!existing) {
     throw new AppError(HTTP_STATUS_CODES.UNAUTHORIZED, "Invalid email");
+  }
+  if (existing.status == Status.INACTIVE) {
+    throw new AppError(HTTP_STATUS_CODES.BAD_REQUEST, "User Can't login");
   }
 
   const isPasswordValid = await validatePassword(
@@ -100,9 +102,17 @@ const refreshTokens = async (refreshToken: string) => {
   };
 };
 
-// all user
-const getAllUsers = async (userId: Types.ObjectId | string) => {
-  const users = await User.findAllUser(new Types.ObjectId(userId));
+const getAllUsers = async ({
+  page,
+  limit,
+  id,
+}: {
+  page: number;
+  limit: number;
+  id: string;
+}) => {
+  const currentUserId = new Types.ObjectId(id);
+  const users = await User.findAllUser({ page, limit, currentUserId });
   if (!users || users.length == 0) {
     throw new AppError(HTTP_STATUS_CODES.NOT_FOUND, "Not Users Found");
   }
@@ -114,7 +124,7 @@ const getAllUsers = async (userId: Types.ObjectId | string) => {
 
 export const authService = {
   login,
-  register,
+  registerToInvite,
   refreshTokens,
   getAllUsers,
 };

@@ -1,24 +1,25 @@
-import { asyncHandler } from "@/handlers/async.handler";
-import express from "express";
 import { inviteController } from "../controllers/invite.controller";
+import { asyncHandler } from "@/handlers/async.handler";
+import { restrictTo, authenticateJWT } from "@/middlewares/auth.middleware";
+import { Role } from "@/modules/auth/types/auth.types";
+import express from "express";
 const router = express.Router();
 
 router.post(
   "/create-invite",
-//   validate(authValidator.LoginSchema),
+  authenticateJWT,
+  restrictTo([Role.ADMIN]),
   asyncHandler(inviteController.createInvite),
 );
 
 router.post(
   "/find-invite",
-//   validate(authValidator.registerSchema),
+  authenticateJWT,
   asyncHandler(inviteController.findInvitation),
 );
 router.post(
   "/accept-invite",
-//   validate(authValidator.registerSchema),
-  asyncHandler(inviteController.),
+  asyncHandler(inviteController.acceptInvitation),
 );
-
 
 export const inviteRouter = router;
