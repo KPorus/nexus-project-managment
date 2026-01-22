@@ -1,11 +1,20 @@
 import { HTTP_STATUS_CODES } from "@/utils/http-status-codes";
-import { ProjectType } from "../types/project.type";
+import { ProjectType, Status } from "../types/project.type";
 import { Project } from "../models/project.model";
 import { AppError } from "@/types/error.type";
 import { Types } from "mongoose";
 
-const createProject = async (data: Partial<ProjectType>) => {
-  const project = await Project.createProject(data);
+const createProject = async (
+  data: Partial<ProjectType>,
+  id: Types.ObjectId,
+) => {
+  const projectData = {
+    ...data,
+    status: Status.ACTIVE,
+    id,
+  };
+  console.log(projectData);
+  const project = await Project.createProject(projectData, id);
 
   return {
     message: "Project created successful",
@@ -34,14 +43,11 @@ const deleteProject = async (id: Types.ObjectId) => {
   };
 };
 
-const updateProject = async ({
-  id,
-  data,
-}: {
-  id: Types.ObjectId;
-  data: Partial<ProjectType>;
-}) => {
-  const updateData = await Project.updateProject(id, data);
+const updateProject = async (
+  id: string,
+  data: Partial<ProjectType>,
+) => {
+  const updateData = await Project.updateProject(new Types.ObjectId(id), data);
   return {
     message: "Project Updated Successfully",
     updateData,

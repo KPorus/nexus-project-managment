@@ -1,4 +1,3 @@
-import { Role } from "@/modules/auth/types/auth.types";
 import { Document, Types } from "mongoose";
 
 export enum Status {
@@ -9,7 +8,7 @@ export enum Status {
 export interface ProjectType extends Document {
   _id: Types.ObjectId;
   name: string;
-  description: Role;
+  description: string;
   isDeleted: boolean;
   status: Status;
   createdBy: Types.ObjectId;

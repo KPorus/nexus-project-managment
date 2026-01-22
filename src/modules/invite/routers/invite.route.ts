@@ -12,11 +12,11 @@ router.post(
   asyncHandler(inviteController.createInvite),
 );
 
-router.post(
-  "/find-invite",
-  authenticateJWT,
-  asyncHandler(inviteController.findInvitation),
-);
+// router.post(
+//   "/find-invite",
+//   authenticateJWT,
+//   asyncHandler(inviteController.findInvitation),
+// );
 router.post(
   "/accept-invite",
   asyncHandler(inviteController.acceptInvitation),

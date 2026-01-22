@@ -3,8 +3,8 @@ import { HTTP_STATUS_CODES } from "@utils/http-status-codes";
 import { sendResponse } from "@/handlers/response.handler";
 import { authService } from "../services/auth.service";
 import { AuthRequest } from "../types/auth.types";
-import { Request, Response } from "express";
 import { AppError } from "@/types/error.type";
+import { Request, Response } from "express";
 
 /**
  * Login controller
@@ -51,13 +51,26 @@ const handleRefreshTokens = async (req: Request, res: Response) => {
 
 const getAllUsers = async (req: AuthRequest, res: Response) => {
   const { page, limit } = req.body;
-  const  id  = req.user?.id;
-  if(!id){
-    throw new AppError(HTTP_STATUS_CODES.NO_CONTENT,"empty data")
+  const id = req.user?.id;
+  if (!id) {
+    throw new AppError(HTTP_STATUS_CODES.NO_CONTENT, "empty data");
   }
   // console.log(page, limit, id);
   const users = await authService.getAllUsers({ page, limit, id });
-  sendResponse(res, users.users, HTTP_STATUS_CODES.OK, users.messages);
+  sendResponse(
+    res,
+    { total: users.total, users: users.users },
+    HTTP_STATUS_CODES.OK,
+    users.messages,
+  );
+};
+
+const updateUser = async (req: AuthRequest, res: Response) => {
+  const id = req.params.id as string;
+  const { status, role } = req.body;
+
+  const result = await authService.updateUser(id, status, role);
+  sendResponse(res, result, HTTP_STATUS_CODES.OK, result.message);
 };
 
 export const authController = {
@@ -65,4 +78,5 @@ export const authController = {
   logout,
   handleRefreshTokens,
   getAllUsers,
+  updateUser
 };

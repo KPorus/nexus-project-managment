@@ -3,7 +3,10 @@ import { Model, Schema, Types, model } from "mongoose";
 import { ProjectType, Status } from "../types/project.type";
 
 export interface ProjectModelType extends Model<ProjectType> {
-  createProject(data: Partial<ProjectType>): Promise<ProjectType>;
+  createProject(
+    data: Partial<ProjectType>,
+    id: Types.ObjectId,
+  ): Promise<ProjectType>;
   listProject(): Promise<ProjectType[] | null>;
   deleteProject(id: Types.ObjectId | string): Promise<ProjectType | null>;
   updateProject(
@@ -29,8 +32,13 @@ const projectSchema = new Schema<ProjectType, ProjectModelType>(
 
 projectSchema.statics.createProject = async function (
   data: Partial<ProjectType>,
+  id: Types.ObjectId,
 ) {
-  const project = await this.create(data);
+  const project = await this.create({
+    name: data.name,
+    description: data.description,
+    createdBy: id,
+  });
   return project;
 };
 projectSchema.statics.listProject = async function (): Promise<

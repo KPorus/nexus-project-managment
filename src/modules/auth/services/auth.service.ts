@@ -11,10 +11,10 @@ import { Types } from "mongoose";
  * Register service =====================================
  */
 const registerToInvite = async (data: TRegisterInput) => {
-  const hashedPassword = await hashPassword(data.password);
+  // const hashedPassword = await hashPassword(data.password);
   const user = await User.createUser({
     email: data.email,
-    password: hashedPassword,
+    password: data.password,
     role: data.role as Role,
   });
   return {
@@ -22,6 +22,7 @@ const registerToInvite = async (data: TRegisterInput) => {
     user: {
       id: user._id,
       email: user.email,
+      role: user.role,
     },
   };
 };
@@ -61,6 +62,7 @@ const login = async (data: TLoginInput) => {
       id: existing._id,
       email: existing.email,
       role: existing.role,
+      status: existing.status,
     },
   };
 };
@@ -113,19 +115,39 @@ const getAllUsers = async ({
   id: Types.ObjectId | string;
 }) => {
   const currentUserId = new Types.ObjectId(id);
-  const users = await User.findAllUser({ page, limit, currentUserId });
+  const { users, total } = await User.findAllUser({
+    page,
+    limit,
+    currentUserId,
+  });
   if (!users || users.length == 0) {
     throw new AppError(HTTP_STATUS_CODES.NOT_FOUND, "Not Users Found");
   }
+  // console.log(total);
   return {
     messages: "Users found",
     users,
+    total,
   };
 };
+const updateUser = async (id: string, status?: Status, role?: Role) => {
+  const updateData = {
+    id: new Types.ObjectId(id),
+    ...(status !== undefined && { status }),
+    ...(role !== undefined && { role }),
+  };
 
+  const updatedUser = await User.updateUser(updateData);
+
+  return {
+    message: "User updated successfully",
+    user: updatedUser,
+  };
+};
 export const authService = {
   login,
   registerToInvite,
   refreshTokens,
   getAllUsers,
+  updateUser,
 };

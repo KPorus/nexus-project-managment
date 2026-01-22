@@ -21,4 +21,11 @@ router.post(
   asyncHandler(authController.getAllUsers),
 );
 
+router.patch(
+  "/update/:id",
+  authenticateJWT,
+  restrictTo([Role.ADMIN]),
+  asyncHandler(authController.updateUser),
+);
+
 export const authRouter = router;

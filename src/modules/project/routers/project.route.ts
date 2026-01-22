@@ -5,23 +5,24 @@ import { Role } from "@/modules/auth/types/auth.types";
 import express from "express";
 const router = express.Router();
 
-router.post("/projects", asyncHandler(projectController.createProject));
-router.get(
-  "/projects",
+router.post(
+  "/",
   authenticateJWT,
-  asyncHandler(projectController.listProject),
+  asyncHandler(projectController.createProject),
 );
+router.get("/", authenticateJWT, asyncHandler(projectController.listProject));
 
 router.patch(
-  "/projects/:id",
+  "/:id",
+  authenticateJWT,
   restrictTo([Role.ADMIN]),
   asyncHandler(projectController.updateProject),
 );
 router.delete(
-  "/projects/:id",
+  "/:id",
   authenticateJWT,
   restrictTo([Role.ADMIN]),
   asyncHandler(projectController.deleteProject),
 );
 
-export const inviteRouter = router;
+export const projectRouter = router;
