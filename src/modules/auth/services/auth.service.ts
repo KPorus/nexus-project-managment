@@ -60,6 +60,7 @@ const login = async (data: TLoginInput) => {
     user: {
       id: existing._id,
       email: existing.email,
+      role: existing.role,
     },
   };
 };
@@ -109,7 +110,7 @@ const getAllUsers = async ({
 }: {
   page: number;
   limit: number;
-  id: string;
+  id: Types.ObjectId | string;
 }) => {
   const currentUserId = new Types.ObjectId(id);
   const users = await User.findAllUser({ page, limit, currentUserId });

@@ -37,7 +37,6 @@ export type TRegisterInput = z.infer<typeof registerSchema>["body"];
 
 // Export Validators
 export const authValidator = {
-  registerSchema,
   LoginSchema,
   seedRegisterSchema,
 };

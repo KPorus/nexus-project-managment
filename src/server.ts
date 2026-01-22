@@ -1,17 +1,18 @@
 import { errorMiddleware } from "./middlewares/error.middleware";
-import { Server as SocketIOServer } from "socket.io";
 import { connectDB } from "./config/db.config"; //
 import express, { Application } from "express";
 import cookieParser from "cookie-parser";
 import router from "./root.route";
 import dotenv from "dotenv";
-import http from "http";
+
 import cors from "cors";
 dotenv.config();
 
 export const app: Application = express();
 const port = process.env.PORT ?? 5000;
-
+const allowedOrigins = [process.env.CLIENT_ECOM_URL].filter(
+  (o): o is string => !!o,
+);
 // Middleware
 app.use(express.json());
 app.use(cookieParser());

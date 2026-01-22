@@ -4,6 +4,7 @@ import { sendResponse } from "@/handlers/response.handler";
 import { authService } from "../services/auth.service";
 import { AuthRequest } from "../types/auth.types";
 import { Request, Response } from "express";
+import { AppError } from "@/types/error.type";
 
 /**
  * Login controller
@@ -50,8 +51,11 @@ const handleRefreshTokens = async (req: Request, res: Response) => {
 
 const getAllUsers = async (req: AuthRequest, res: Response) => {
   const { page, limit } = req.body;
-  const id = req.user?.id;
-  console.log(page, limit, id);
+  const  id  = req.user?.id;
+  if(!id){
+    throw new AppError(HTTP_STATUS_CODES.NO_CONTENT,"empty data")
+  }
+  // console.log(page, limit, id);
   const users = await authService.getAllUsers({ page, limit, id });
   sendResponse(res, users.users, HTTP_STATUS_CODES.OK, users.messages);
 };

@@ -1,6 +1,6 @@
 import { HTTP_STATUS_CODES } from "@/utils/http-status-codes";
 import { Role } from "@/modules/auth/types/auth.types";
-import { Model, Schema, model } from "mongoose";
+import mongoose, { Model, Schema, model } from "mongoose";
 import { InviteType } from "../types/invite.type";
 import { AppError } from "@/types/error.type";
 import crypto from "crypto";
@@ -20,7 +20,7 @@ export interface InvitationModelType extends Model<InviteType> {
   createInvitation(data: {
     email: string;
     role: Role;
-  }): Promise<InviteType>;
+  }, session?: mongoose.ClientSession): Promise<InviteType>;
 }
 
 const invitationSchema = new Schema<InviteType, InvitationModelType>(
@@ -33,19 +33,36 @@ const invitationSchema = new Schema<InviteType, InvitationModelType>(
   { timestamps: true },
 );
 
+// invitationSchema.statics.createInvitation = async function (data: {
+//   email: string;
+//   role: Role;
+// }): Promise<InviteType> {
+//   const token = generateExpiringId(60 * 60 * 1000);
+//   console.log(token);
+//   const user = await this.create({
+//     email: data.email,
+//     role: data.role,
+//     token: token,
+//   });
+//   return user;
+// };
+
+
 invitationSchema.statics.createInvitation = async function (data: {
   email: string;
   role: Role;
-}): Promise<InviteType> {
+}, session?: mongoose.ClientSession): Promise<InviteType> {
   const token = generateExpiringId(60 * 60 * 1000);
   console.log(token);
-  const user = await this.create({
+  const createOpts = session ? { session } : {};
+  const users = await this.create([{
     email: data.email,
     role: data.role,
     token: token,
-  });
-  return user;
+  }], createOpts);
+  return users[0];
 };
+
 
 invitationSchema.statics.findInvitation = async function (
   token: string,

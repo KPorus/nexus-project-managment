@@ -14,7 +14,7 @@ router.post(
 );
 
 router.post("/refreshToken", asyncHandler(authController.handleRefreshTokens));
-router.get(
+router.post(
   "/get-all-users",
   authenticateJWT,
   restrictTo([Role.ADMIN]),

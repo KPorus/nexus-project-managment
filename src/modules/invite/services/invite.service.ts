@@ -6,31 +6,67 @@ import { Invitation } from "../models/invite.model";
 import { sendEmail } from "@/utils/email.util";
 import { AppError } from "@/types/error.type";
 
-const createInvite = async (data: { email: string; role: Role }) => {
-  const user = await Invitation.createInvitation({
-    email: data.email,
-    role: data.role,
-  });
+// const createInvite = async (data: { email: string; role: Role }) => {
+//   const user = await Invitation.createInvitation({
+//     email: data.email,
+//     role: data.role,
+//   });
 
-  // Construct invitation URL
-  const baseUrl = process.env.CLIENT_ECOM_URL;
-  const link: string = `${baseUrl}/invite?token=${user.token}`;
-  console.log(link);
-  const emailData = {
-    email: data.email,
-    link: link,
-  };
-  // console.log(user);
-  await sendingEmail(emailData);
-  return {
-    message: "Invitation created successful",
-    user: {
-      id: user._id,
-      email: user.email,
-      link: link,
-    },
-  };
+//   // Construct invitation URL
+//   const baseUrl = process.env.CLIENT_ECOM_URL;
+//   const link: string = `${baseUrl}/invite?token=${user.token}`;
+//   console.log(link);
+//   const emailData = {
+//     email: data.email,
+//     link: link,
+//   };
+//   // console.log(user);
+//   await sendingEmail(emailData);
+//   return {
+//     message: "Invitation created successful",
+//     user: {
+//       id: user._id,
+//       email: user.email,
+//       link: link,
+//     },
+//   };
+// };
+
+import mongoose from "mongoose";
+import { InviteType } from "../types/invite.type";
+
+const createInvite = async (data: { email: string; role: Role }) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  let user: InviteType | null = null;
+  try {
+    user = await Invitation.createInvitation(data, session);
+    const baseUrl = process.env.CLIENT_ECOM_URL!;
+    const link: string = `${baseUrl}/invite?token=${user.token}`;
+    console.log(link);
+    const emailData = { email: data.email, link };
+    await sendingEmail(emailData);
+    await session.commitTransaction();
+    return {
+      message: "Invitation created successful",
+      user: {
+        id: user._id,
+        email: user.email,
+        link,
+      },
+    };
+  } catch (error) {
+    await session.abortTransaction();
+    if (user?._id) {
+      await Invitation.findByIdAndDelete(user._id).exec();
+    }
+    throw new AppError(HTTP_STATUS_CODES.BAD_REQUEST, "Failed to send email"); 
+  } finally {
+    await session.endSession();
+  }
 };
+
+
 
 const findInvitation = async (token: string) => {
   const invitation = await Invitation.findInvitation(token);
