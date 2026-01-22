@@ -43,7 +43,7 @@ const createInvite = async (data: { email: string; role: Role }) => {
     user = await Invitation.createInvitation(data, session);
     const baseUrl = process.env.CLIENT_ECOM_URL!;
     const link: string = `${baseUrl}/#/invite?token=${user.token}`;
-    console.log(link);
+    // console.log(link);
     const emailData = { email: data.email, link };
     await sendingEmail(emailData);
     await session.commitTransaction();
