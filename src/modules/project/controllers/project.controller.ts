@@ -17,25 +17,33 @@ const createProject = async (req: AuthRequest, res: Response) => {
     body,
     new Types.ObjectId(id),
   );
-  sendResponse(res, project, HTTP_STATUS_CODES.OK, "Project Created");
+  sendResponse(res, project.project, HTTP_STATUS_CODES.OK, project.message);
 };
 
 const listProject = async (req: Request, res: Response) => {
   const project = await projectService.listProject();
-  sendResponse(res, project, HTTP_STATUS_CODES.OK, "Project found");
+  sendResponse(res, project.projects, HTTP_STATUS_CODES.OK, project.message);
 };
 const updateProject = async (req: Request, res: Response) => {
   const data = req.body;
   const id = req.params.id as string
-  console.log(data,id);
+  // console.log(data,id);
   const updateData = await projectService.updateProject(id,data);
-  sendResponse(res, updateData, HTTP_STATUS_CODES.OK, "Project updated");
+  sendResponse(res, updateData.updateData, HTTP_STATUS_CODES.OK, updateData.message);
 };
 
 const deleteProject = async (req: Request, res: Response) => {
-  const { id } = req.body;
+  const id  = req.params.id as string;
   const updateData = await projectService.deleteProject(new Types.ObjectId(id));
-  sendResponse(res, updateData, HTTP_STATUS_CODES.OK, "Project delete");
+    if (!updateData.project) {
+    sendResponse(
+      res,
+      updateData.project,
+      HTTP_STATUS_CODES.BAD_REQUEST,
+      "Delete Failed",
+    );
+  }
+  sendResponse(res, updateData.project, HTTP_STATUS_CODES.OK, updateData.message);
 };
 
 export const projectController = {

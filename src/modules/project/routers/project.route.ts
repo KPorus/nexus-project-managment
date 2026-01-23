@@ -18,8 +18,8 @@ router.patch(
   restrictTo([Role.ADMIN]),
   asyncHandler(projectController.updateProject),
 );
-router.delete(
-  "/:id",
+router.patch(
+  "/soft_delete/:id",
   authenticateJWT,
   restrictTo([Role.ADMIN]),
   asyncHandler(projectController.deleteProject),

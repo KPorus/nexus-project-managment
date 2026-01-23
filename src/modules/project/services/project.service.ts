@@ -13,7 +13,7 @@ const createProject = async (
     status: Status.ACTIVE,
     id,
   };
-  console.log(projectData);
+  // console.log(projectData);
   const project = await Project.createProject(projectData, id);
 
   return {

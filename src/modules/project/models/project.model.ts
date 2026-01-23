@@ -24,7 +24,7 @@ const projectSchema = new Schema<ProjectType, ProjectModelType>(
       enum: Object.values(Status),
       default: Status.ACTIVE,
     },
-    isDeleted: { type: Boolean, default: true },
+    isDeleted: { type: Boolean, default: false },
     createdBy: { type: Schema.ObjectId, required: true },
   },
   { timestamps: true },
@@ -58,8 +58,15 @@ projectSchema.statics.updateProject = async function (
 projectSchema.statics.deleteProject = async function (
   id: Types.ObjectId | string,
 ) {
-  const project = await this.findById(id);
-  if (project?._id) return await this.deleteOne({ _id: id });
+  // const project = await this.findById(id);
+  // if (project?._id) return await this.deleteOne({ _id: id });
+  return await this.findByIdAndUpdate(
+    { _id: id },
+    { isDeleted: true, status: Status.DELETED },
+    {
+      new: true,
+    },
+  );
 };
 
 export const Project = model<ProjectType, ProjectModelType>(
